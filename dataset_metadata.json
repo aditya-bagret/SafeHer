@@ -1,0 +1,29 @@
+{
+  "dataset_name": "SafeHer Delhi Safety Dataset v1.0",
+  "total_rows": 62040,
+  "total_sequences": 60360,
+  "num_features": 9,
+  "feature_names": [
+    "hour_of_day",
+    "day_of_week",
+    "is_weekend",
+    "crime_count_normalized",
+    "police_coverage_score",
+    "street_light_score",
+    "metro_access_score",
+    "footfall_score",
+    "sentiment_score"
+  ],
+  "target_variable": "safety_score",
+  "target_range": "0-100",
+  "sequence_length": 24,
+  "zones_covered": 70,
+  "city": "Delhi, India",
+  "data_sources": [
+    "NCRB 2022 (seed)",
+    "Infrastructure proxies",
+    "CTGAN synthetic augmentation"
+  ],
+  "train_test_split": "80/20",
+  "input_tensor": "(48288, 24, 9)"
+}
