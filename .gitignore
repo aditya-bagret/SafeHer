@@ -1,0 +1,6 @@
+.env
+*.pkl
+*.csv
+node_modules/
+__pycache__/
+

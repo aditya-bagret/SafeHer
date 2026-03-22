@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0c10" />
+    <meta
+      name="description"
+      content="SafeHer — Real-time women safety navigation with AI-powered risk heatmaps and safe route recommendations"
+    />
+
+    <title>SafeHer</title>
+
+    <!-- Favicon (inline SVG shield) -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Google Maps JavaScript API
+      ─────────────────────────────────────────────────────────────────────────
+      IMPORTANT: Replace YOUR_API_KEY below with your actual key.
+
+      Required libraries:
+        - visualization  →  HeatmapLayer for the risk heatmap
+        - geometry       →  route polyline decoding helpers
+        - places         →  autocomplete on origin/destination inputs
+
+      To get an API key:
+        1. Go to https://console.cloud.google.com
+        2. Create a project → Enable "Maps JavaScript API"
+        3. APIs & Services → Credentials → Create API Key
+        4. Restrict it to your domain in production
+
+      The script is loaded with loading=async so it does not block rendering.
+    -->
+    <script>
+      // Expose the key as a global so React components can reference it
+      window.GOOGLE_MAPS_API_KEY = AIzaSyC-RfgiUROO-gx0Jfje6Y5mrESe_kbfbvs;
+    </script>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-RfgiUROO-gx0Jfje6Y5mrESe_kbfbvs&libraries=visualization,geometry,places&loading=async"
+      async
+      defer
+    ></script>
+
+    <style>
+      /* Global reset — keeps layout predictable across browsers */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --font-display: "Outfit", sans-serif;
+        --font-mono: "DM Mono", monospace;
+
+        /* Core palette */
+        --bg:       #0a0c10;
+        --surface:  #111318;
+        --surface2: #181c24;
+        --border:   #1e2330;
+        --border2:  #252d3d;
+
+        /* Text */
+        --text:     #e8eaf2;
+        --muted:    #5a6380;
+        --muted2:   #8b92a8;
+
+        /* Risk colours */
+        --safe:     #22c55e;
+        --moderate: #f59e0b;
+        --high:     #ef4444;
+
+        /* Accent */
+        --accent:   #6366f1;
+        --accent2:  #818cf8;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-display);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      #root {
+        height: 100%;
+      }
+
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 4px;
+      }
+
+      /* Google Maps autocomplete dropdown — restyle to match dark theme */
+      .pac-container {
+        background: var(--surface2) !important;
+        border: 1px solid var(--border2) !important;
+        border-radius: 8px !important;
+        margin-top: 4px !important;
+        font-family: var(--font-display) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+      }
+      .pac-item {
+        background: transparent !important;
+        color: var(--text) !important;
+        border-top: 1px solid var(--border) !important;
+        padding: 8px 12px !important;
+        cursor: pointer !important;
+        font-size: 13px !important;
+      }
+      .pac-item:hover,
+      .pac-item-selected {
+        background: var(--border) !important;
+      }
+      .pac-item-query {
+        color: var(--text) !important;
+        font-size: 13px !important;
+      }
+      .pac-matched {
+        color: var(--accent2) !important;
+        font-weight: 500 !important;
+      }
+      .pac-icon {
+        display: none !important;
+      }
+      .hdpi .pac-icon {
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>
+      SafeHer requires JavaScript to run. Please enable it in your browser.
+    </noscript>
+
+    <div id="root"></div>
+  </body>
+</html>
