@@ -1,0 +1,44 @@
+<div style="padding:0.5rem 0">
+<div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:14px">Table I — Spatial risk model comparison (CDI percentile target, 14,129 cells, 80/20 split)</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+
+<div style="display:flex;gap:10px">
+<div style="flex:1;background:var(--color-background-secondary);border-radius:8px;padding:12px">
+<div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">R² score</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:500;color:var(--color-text-primary)">LightGBM</span><span style="color:#1D9E75;font-weight:500">0.9997</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#1D9E75;height:8px;border-radius:4px;width:99.97%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">Random Forest</span><span style="color:var(--color-text-secondary)">0.9997</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#378ADD;height:8px;border-radius:4px;width:99.97%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">XGBoost</span><span style="color:var(--color-text-secondary)">0.9995</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#EF9F27;height:8px;border-radius:4px;width:99.95%"></div></div></div>
+</div>
+</div>
+<div style="flex:1;background:var(--color-background-secondary);border-radius:8px;padding:12px">
+<div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">HR Precision (threshold 0.7)</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:500;color:var(--color-text-primary)">LightGBM</span><span style="color:#1D9E75;font-weight:500">0.9920</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#1D9E75;height:8px;border-radius:4px;width:99.2%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">Random Forest</span><span style="color:var(--color-text-secondary)">0.9988</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#378ADD;height:8px;border-radius:4px;width:99.88%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">XGBoost</span><span style="color:var(--color-text-secondary)">1.0000</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#EF9F27;height:8px;border-radius:4px;width:100%"></div></div></div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;gap:10px">
+<div style="flex:1;background:var(--color-background-secondary);border-radius:8px;padding:12px">
+<div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">MAE (lower is better)</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:500;color:var(--color-text-primary)">LightGBM</span><span style="color:#1D9E75;font-weight:500">0.0030</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#1D9E75;height:8px;border-radius:4px;width:30%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">Random Forest</span><span style="color:var(--color-text-secondary)">0.0022</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#378ADD;height:8px;border-radius:4px;width:22%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">XGBoost</span><span style="color:var(--color-text-secondary)">0.0040</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#EF9F27;height:8px;border-radius:4px;width:40%"></div></div></div>
+</div>
+</div>
+<div style="flex:1;background:var(--color-background-secondary);border-radius:8px;padding:12px">
+<div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">Inference time per 10k cells</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:500;color:var(--color-text-primary)">LightGBM</span><span style="color:#1D9E75;font-weight:500">0.03s</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#1D9E75;height:8px;border-radius:4px;width:3%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">Random Forest</span><span style="color:var(--color-text-secondary)">0.03s</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#378ADD;height:8px;border-radius:4px;width:3%"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--color-text-secondary)">XGBoost</span><span style="color:var(--color-text-secondary)">0.00s</span></div><div style="background:var(--color-border-tertiary);border-radius:4px;height:8px"><div style="background:#EF9F27;height:8px;border-radius:4px;width:0.5%"></div></div></div>
+</div>
+</div>
+</div>
+<div style="font-size:11px;color:var(--color-text-tertiary);padding:0 2px">LightGBM selected for deployment: production-grade serving library, interpretable feature importance, established safety in real-world systems.</div>
+</div>
+</div>
