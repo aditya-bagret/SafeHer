@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback } from "react";
 import HeatMap    from "./components/HeatMap";
 import RouteMap   from "./components/RouteMap";
 import HourSlider from "./components/HourSlider";
+import FiguresSection from "./components/FiguresSection";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -208,6 +209,11 @@ export default function App() {
           <div style={styles.factCard}>
             <div style={styles.factLabel}>📊 Did you know?</div>
             <div style={styles.factText}>{RISK_FACTS[factIndex]}</div>
+          </div>
+          {/* Rotating risk fact */}
+          <div style={styles.factCard}>
+                  <FiguresSection styles={styles}/>
+
           </div>
 
         </aside>
@@ -550,6 +556,48 @@ const styles = {
     color: "#5a6380",
     fontFamily: "'DM Mono', monospace",
   },
+  figuresCard: {
+  background: "#0a0c10",
+  border: "1px solid #1e2330",
+  borderRadius: 10,
+  padding: "14px",
+},
+
+figuresTitle: {
+  fontSize: 11,
+  fontWeight: 600,
+  color: "#8b92a8",
+  textTransform: "uppercase",
+  letterSpacing: "0.8px",
+  marginBottom: 10,
+},
+
+figureList: {
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+},
+
+figureItem: {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  padding: "8px 10px",
+  borderRadius: 6,
+  textDecoration: "none",
+  fontSize: 12,
+  color: "#e8eaf2",
+  background: "transparent",
+  border: "1px solid transparent",
+  cursor: "pointer",
+  transition: "all 0.15s ease",
+},
+
+figureItemHover: {
+  background: "#111827",
+  border: "1px solid #2a3350",
+  transform: "translateX(3px)",
+},
 };
 
 // Inject spinner keyframe
