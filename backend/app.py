@@ -26,9 +26,11 @@ from routes_saferoute import saferoute_bp
 def create_app() -> Flask:
     app = Flask(__name__)
 
-    # Allow requests from the React dev server (port 3000)
-    # and any production origin — tighten this in prod if needed
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Comma-separated list of allowed origins (set in production).
+    # Falls back to localhost dev servers when unset.
+    origins_env = os.environ.get("CORS_ORIGINS", "http://localhost:3000")
+    origins = [o.strip() for o in origins_env.split(",") if o.strip()]
+    CORS(app, resources={r"/api/*": {"origins": origins}})
 
     # Register blueprints
     app.register_blueprint(heatmap_bp)

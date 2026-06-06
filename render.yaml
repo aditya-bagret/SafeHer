@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: safeher-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn --chdir backend --workers 1 --threads 2 --timeout 120 --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FLASK_ENV
+        value: production
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
