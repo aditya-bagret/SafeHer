@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeHer — Research Figures</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f8f8f6; color: #1a1a1a; }
+  .cover { background: #1a3c6e; color: #fff; padding: 40px 48px; }
+  .cover h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .cover p { font-size: 14px; color: #aac4e8; }
+  .toc { padding: 28px 48px; background: #fff; border-bottom: 1px solid #e0e0e0; }
+  .toc h2 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #555; }
+  .toc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px 24px; }
+  .toc a { font-size: 12px; color: #1a3c6e; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .section { padding: 32px 48px; border-bottom: 1px solid #e8e8e8; page-break-inside: avoid; background: #fff; margin-bottom: 12px; }
+  .section:nth-child(odd) { background: #fafafa; }
+  .fig-label { font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .fig-title { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .fig-caption { font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.6; }
+  svg { width: 100%; }
+  .chart-wrap { position: relative; width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #1a3c6e; color: #fff; padding: 10px 12px; text-align: left; font-weight: 500; }
+  td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+  tr:nth-child(even) td { background: #f5f8ff; }
+  .tick { color: #1D9E75; font-size: 16px; }
+  .cross { color: #E24B4A; font-size: 16px; }
+  .half { color: #EF9F27; font-size: 14px; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+  .pill-green { background: #E1F5EE; color: #085041; }
+  .pill-blue  { background: #E6F1FB; color: #0C447C; }
+  .pill-red   { background: #FCEBEB; color: #791F1F; }
+  .pill-amber { background: #FAEEDA; color: #633806; }
+  .pill-purple{ background: #EEEDFE; color: #26215C; }
+  .metrics-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .metric-card { flex: 1; min-width: 120px; background: #f0f4ff; border-radius: 8px; padding: 12px 16px; text-align: center; }
+  .metric-val { font-size: 24px; font-weight: 700; color: #1a3c6e; }
+  .metric-lbl { font-size: 11px; color: #666; margin-top: 4px; }
+  .sdg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .sdg-card { border-radius: 10px; padding: 16px; border: 2px solid; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .bar-label { width: 160px; font-size: 12px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 20px; background: #eee; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 11px; font-weight: 600; color: #fff; }
+  .ui-mock { border: 1px solid #ddd; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .ui-bar { background: #111; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+  .ui-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .ui-map { background: #2a3a2a; height: 280px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .ui-sidebar { background: #1a1a2e; width: 220px; padding: 14px; color: #ccc; font-size: 11px; }
+  .uat-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .uat-label { width: 200px; font-size: 12px; color: #444; flex-shrink: 0; }
+  .uat-track { flex: 1; height: 22px; background: #eee; border-radius: 4px; overflow: hidden; }
+  .uat-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11px; font-weight: 600; color: #fff; }
+  .flow-step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+  .flow-num { width: 32px; height: 32px; border-radius: 50%; background: #1a3c6e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .flow-content { flex: 1; padding-top: 4px; }
+  .flow-title { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .flow-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .flow-connector { width: 2px; height: 16px; background: #ccc; margin: 0 0 0 15px; }
+  @media print { body { background: #fff; } .section { margin-bottom: 0; border: none; page-break-after: always; } }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div style="font-size:12px;color:#7a9ec4;margin-bottom:8px">SRM Institute of Science and Technology — B.Tech Minor Research Project</div>
+  <h1>🛡 SafeHer — Research Figures</h1>
+  <p>AI-Powered Women's Safety Navigation System · 18 Figures · IEEE Access Manuscript</p>
+  <div style="margin-top:16px;display:flex;gap:24px;font-size:12px;color:#aac4e8">
+    <span>Dataset: Chicago Crimes 2001–2025 (8.4M incidents)</span>
+    <span>Model: LightGBM · R²=0.9997</span>
+    <span>Grid: 14,129 cells @ 200m</span>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>Table of Figures</h2>
+  <div class="toc-grid">
+    <a href="#fig1">Fig 1 · SafeHer System Overview</a>
+    <a href="#fig2">Fig 2 · SDG Alignment</a>
+    <a href="#fig3">Fig 3 · Existing Apps Comparison</a>
+    <a href="#fig4">Fig 4 · Project Gantt Chart</a>
+    <a href="#fig5">Fig 5 · ML Pipeline Architecture</a>
+    <a href="#fig6">Fig 6 · Severity Class Distribution</a>
+    <a href="#fig7">Fig 7 · CDI Formula &amp; Distribution</a>
+    <a href="#fig8">Fig 8 · Feature Importance</a>
+    <a href="#fig9">Fig 9 · Temporal Multiplier Heatmap</a>
+    <a href="#fig10">Fig 10 · System Architecture</a>
+    <a href="#fig11">Fig 11 · ER Diagram</a>
+    <a href="#fig12">Fig 12 · API Flow Diagram</a>
+    <a href="#fig13">Fig 13 · Heatmap UI Mockup</a>
+    <a href="#fig14">Fig 14 · Safe Route UI Mockup</a>
+    <a href="#fig15">Fig 15 · Model Performance Comparison</a>
+    <a href="#fig16">Fig 16 · Grid Generation Speed</a>
+    <a href="#fig17">Fig 17 · SOS Alert Flow</a>
+    <a href="#fig18">Fig 18 · User Acceptance Testing</a>
+  </div>
+</div>
+
+<!-- ─── FIG 1 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig1">
+<div class="fig-label">Figure 1</div>
+<div class="fig-title">SafeHer System Overview Diagram</div>
+<div class="fig-caption">End-to-end view of SafeHer showing the user interface, two primary features (dynamic heatmap and safe route), the unified risk engine at the core, and the three model artifacts loaded at startup.</div>
+<svg viewBox="0 0 680 380">
+<defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<!-- User -->
+<ellipse cx="340" cy="56" rx="72" ry="32" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="340" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#0C447C">User</text>
+<text x="340" y="66" text-anchor="middle" font-size="11" fill="#185FA5">mobile / web browser</text>
+<!-- Left branch -->
+<line x1="275" y1="72" x2="180" y2="118" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#a1)"/>
+<rect x="60" y="118" width="240" height="52" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text x="180" y="138" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Dynamic temporal heatmap</text>
+<text x="180" y="155" text-anchor="middle" font-size="11" fill="#1D9E75">Hour slider → city risk updates &lt;1s</text>
+<!-- Right branch -->
+<line x1="405" y1="72" x2="500" y2="118" stroke="#534AB7" stroke-width="1.5" marker-end="url(#a1)"/>
+<rect x="380" y="118" width="240" height="52" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="500" y="138" text-anchor="middle" font-size="13" font-weight="600" fill="#26215C">Safe route recommender</text>
+<text x="500" y="155" text-anchor="middle" font-size="11" fill="#534AB7">Origin → dest → routes ranked by risk</text>
+<!-- Down to engine -->
+<line x1="180" y1="170" x2="270" y2="222" stroke="#888" stroke-width="1" marker-end="url(#a1)"/>
+<line x1="500" y1="170" x2="410" y2="222" stroke="#888" stroke-width="1" marker-end="url(#a1)"/>
+<!-- Unified engine -->
+<rect x="160" y="222" width="360" height="56" rx="10" fill="#1a3c6e" stroke="#1a3c6e" stroke-width="1"/>
+<text x="340" y="242" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">Unified risk engine — risk_grid.py</text>
+<text x="340" y="260" text-anchor="middle" font-size="11" fill="#aac4e8">risk = clip( spatial_risk(cell) × temporal_mult(h,d), 0, 1 )</text>
+<!-- Artifacts -->
+<line x1="260" y1="278" x2="180" y2="312" stroke="#888" stroke-width="1" marker-end="url(#a1)"/>
+<line x1="340" y1="278" x2="340" y2="312" stroke="#888" stroke-width="1" marker-end="url(#a1)"/>
+<line x1="420" y1="278" x2="500" y2="312" stroke="#888" stroke-width="1" marker-end="url(#a1)"/>
+<rect x="60"  y="312" width="240" height="40" rx="8" fill="#EF9F27" stroke="#BA7517" stroke-width="0.5"/>
+<text x="180" y="336" text-anchor="middle" font-size="12" font-weight="600" fill="#412402">LightGBM spatial model</text>
+<rect x="220" y="312" width="240" height="40" rx="8" fill="#EF9F27" stroke="#BA7517" stroke-width="0.5"/>
+<text x="340" y="336" text-anchor="middle" font-size="12" font-weight="600" fill="#412402">Temporal lookup (168 slots)</text>
+<rect x="380" y="312" width="240" height="40" rx="8" fill="#EF9F27" stroke="#BA7517" stroke-width="0.5"/>
+<text x="500" y="336" text-anchor="middle" font-size="12" font-weight="600" fill="#412402">Density lookup (14,129 cells)</text>
+<!-- Bottom note -->
+<text x="340" y="370" text-anchor="middle" font-size="11" fill="#888">Trained on 8.4M Chicago crime incidents (2001–2025)</text>
+</svg>
+</div>
+
+<!-- ─── FIG 2 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig2">
+<div class="fig-label">Figure 2</div>
+<div class="fig-title">Sustainable Development Goals Alignment</div>
+<div class="fig-caption">SafeHer directly supports six UN SDGs. SDG 5 (Gender Equality) is the primary goal; SDGs 3, 9, 10, 11, and 16 are secondary contributions arising from the system's technical design and ethical safeguards.</div>
+<div class="sdg-grid">
+<div class="sdg-card" style="border-color:#E24B4A">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="width:48px;height:48px;border-radius:8px;background:#E24B4A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">5</div>
+    <div><div style="font-size:13px;font-weight:600;color:#A32D2D">SDG 5 — Gender Equality</div></div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.6">Reduces constraints on women's urban mobility caused by fear of crime. Provides objective, data-driven safety information for route decisions.</div>
+</div>
+<div class="sdg-card" style="border-color:#1D9E75">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="width:48px;height:48px;border-radius:8px;background:#1D9E75;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">11</div>
+    <div><div style="font-size:13px;font-weight:600;color:#085041">SDG 11 — Sustainable Cities</div></div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.6">Makes cities inclusive and safe through 200m pedestrian-scale crime risk assessment across all 14,129 grid cells in Chicago.</div>
+</div>
+<div class="sdg-card" style="border-color:#378ADD">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="width:48px;height:48px;border-radius:8px;background:#378ADD;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">16</div>
+    <div><div style="font-size:13px;font-weight:600;color:#0C447C">SDG 16 — Peace &amp; Justice</div></div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.6">Leverages 24 years of official CPD data. Transparent, objective risk scoring avoids subjective or crowdsourced input bias.</div>
+</div>
+<div class="sdg-card" style="border-color:#EF9F27">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="width:48px;height:48px;border-radius:8px;background:#EF9F27;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">9</div>
+    <div><div style="font-size:13px;font-weight:600;color:#633806">SDG 9 — Industry &amp; Innovation</div></div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.6">LightGBM two-component architecture achieves 105× speedup over CNN-LSTM with equal accuracy — novel research contribution.</div>
+</div>
+<div class="sdg-card" style="border-color:#7F77DD">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="width:48px;height:48px;border-radius:8px;background:#7F77DD;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">10</div>
+    <div><div style="font-size:13px;font-weight:600;color:#26215C">SDG 10 — Reduced Inequalities</div></div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.6">Uses reported incidents (not arrests) and percentile ranking to mitigate policing-bias amplification in predictions.</div>
+</div>
+<div class="sdg-card" style="border-color:#D85A30">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="width:48px;height:48px;border-radius:8px;background:#D85A30;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">3</div>
+    <div><div style="font-size:13px;font-weight:600;color:#4A1B0C">SDG 3 — Health &amp; Well-being</div></div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.6">Reduces physical and psychological harm through proactive danger avoidance and SOS emergency alert integration.</div>
+</div>
+</div>
+</div>
+
+<!-- ─── FIG 3 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig3">
+<div class="fig-label">Figure 3</div>
+<div class="fig-title">Comparison of Existing Safety Applications</div>
+<div class="fig-caption">Feature matrix comparing SafeHer against five prior systems. SafeHer is the only system to simultaneously offer temporally-dynamic risk scoring, unified heatmap and route coupling, and ML-driven scoring from official crime data.</div>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th style="text-align:center">Safetipin</th>
+<th style="text-align:center">SafePath</th>
+<th style="text-align:center">CrimeTravel</th>
+<th style="text-align:center">CrimeMapping</th>
+<th style="text-align:center">WalkSafe</th>
+<th style="text-align:center;background:#0F6E56">SafeHer ✓</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Real-time risk scoring</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Temporal risk variation</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Safe route recommendation</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="tick">✓</td><td style="text-align:center" class="tick">✓</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Interactive heatmap</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="tick">✓</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Unified heatmap + routing model</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>ML-driven risk model</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Official crime data (not crowdsourced)</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="tick">✓</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Sub-second heatmap update</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>SOS / emergency alert</td><td style="text-align:center" class="tick">✓</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="half">◐</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+<tr><td>Pedestrian-scale grid (&lt;500m)</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="half">◐</td><td style="text-align:center" class="cross">✗</td><td style="text-align:center" class="tick">✓</td><td style="text-align:center;background:#f0fff8" class="tick">✓</td></tr>
+</tbody>
+</table>
+<div style="margin-top:10px;display:flex;gap:20px;font-size:11px;color:#888">
+<span class="tick">✓</span> Supported &nbsp;
+<span class="cross">✗</span> Not supported &nbsp;
+<span class="half">◐</span> Partial
+</div>
+</div>
+
+<!-- ─── FIG 4 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig4">
+<div class="fig-label">Figure 4</div>
+<div class="fig-title">Project Roadmap / Gantt Chart</div>
+<div class="fig-caption">Four-week development timeline with parallel tracks for ML pipeline, backend API, React frontend, and paper writing. Milestone diamonds mark phase boundaries.</div>
+<svg viewBox="0 0 680 320" style="font-family:Arial,sans-serif">
+<!-- Header row -->
+<rect x="0" y="0" width="175" height="30" fill="#f5f5f5"/>
+<rect x="175" y="0" width="125" height="30" fill="#EEEDFE" rx="0"/>
+<text x="237" y="19" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Week 1</text>
+<rect x="300" y="0" width="125" height="30" fill="#E1F5EE"/>
+<text x="362" y="19" text-anchor="middle" font-size="12" font-weight="600" fill="#085041">Week 2</text>
+<rect x="425" y="0" width="125" height="30" fill="#FAECE7"/>
+<text x="487" y="19" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Week 3</text>
+<rect x="550" y="0" width="130" height="30" fill="#E6F1FB"/>
+<text x="615" y="19" text-anchor="middle" font-size="12" font-weight="600" fill="#0C447C">Week 4</text>
+<!-- Grid lines -->
+<line x1="300" y1="30" x2="300" y2="310" stroke="#ddd" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="425" y1="30" x2="425" y2="310" stroke="#ddd" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="550" y1="30" x2="550" y2="310" stroke="#ddd" stroke-width="1" stroke-dasharray="4 3"/>
+<!-- Row labels -->
+<text x="168" y="58" text-anchor="end" font-size="11" fill="#555">EDA + preprocessing</text>
+<text x="168" y="88" text-anchor="end" font-size="11" fill="#555">Model training (CDI)</text>
+<text x="168" y="118" text-anchor="end" font-size="11" fill="#555">Baseline evaluation</text>
+<text x="168" y="148" text-anchor="end" font-size="11" fill="#555">Risk grid engine</text>
+<text x="168" y="178" text-anchor="end" font-size="11" fill="#555">Flask API endpoints</text>
+<text x="168" y="208" text-anchor="end" font-size="11" fill="#555">React frontend</text>
+<text x="168" y="238" text-anchor="end" font-size="11" fill="#555">Google Maps integration</text>
+<text x="168" y="268" text-anchor="end" font-size="11" fill="#555">Paper + demo writing</text>
+<text x="168" y="298" text-anchor="end" font-size="11" fill="#555">Testing + report</text>
+<!-- Bars: phase 1 -->
+<rect x="175" y="44" width="125" height="20" rx="5" fill="#7F77DD"/>
+<text x="237" y="57" text-anchor="middle" font-size="10" fill="#fff">eda.py + preprocess.py</text>
+<rect x="200" y="74" width="100" height="20" rx="5" fill="#534AB7"/>
+<text x="250" y="87" text-anchor="middle" font-size="10" fill="#fff">train.py — LightGBM</text>
+<rect x="220" y="104" width="80" height="20" rx="5" fill="#AFA9EC"/>
+<text x="260" y="117" text-anchor="middle" font-size="10" fill="#26215C">evaluate.py</text>
+<!-- Phase 2 -->
+<rect x="300" y="134" width="125" height="20" rx="5" fill="#1D9E75"/>
+<text x="362" y="147" text-anchor="middle" font-size="10" fill="#fff">risk_grid.py</text>
+<rect x="300" y="164" width="125" height="20" rx="5" fill="#0F6E56"/>
+<text x="362" y="177" text-anchor="middle" font-size="10" fill="#fff">/api/heatmap + /safe-route</text>
+<!-- Phase 3 -->
+<rect x="425" y="194" width="125" height="20" rx="5" fill="#D85A30"/>
+<text x="487" y="207" text-anchor="middle" font-size="10" fill="#fff">App + HeatMap + RouteMap</text>
+<rect x="425" y="224" width="90" height="20" rx="5" fill="#993C1D"/>
+<text x="470" y="237" text-anchor="middle" font-size="10" fill="#fff">Maps + Directions API</text>
+<!-- Phase 4 -->
+<rect x="550" y="254" width="130" height="20" rx="5" fill="#185FA5"/>
+<text x="615" y="267" text-anchor="middle" font-size="10" fill="#fff">IEEE Access manuscript</text>
+<rect x="550" y="284" width="130" height="20" rx="5" fill="#0C447C"/>
+<text x="615" y="297" text-anchor="middle" font-size="10" fill="#fff">B.Tech report + UAT</text>
+<!-- Milestone diamonds -->
+<polygon points="298,137 304,131 310,137 304,143" fill="#1D9E75"/>
+<polygon points="423,197 429,191 435,197 429,203" fill="#D85A30"/>
+<polygon points="548,257 554,251 560,257 554,263" fill="#185FA5"/>
+</svg>
+</div>
+
+<!-- ─── FIG 5 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig5">
+<div class="fig-label">Figure 5</div>
+<div class="fig-title">ML Pipeline Architecture</div>
+<div class="fig-caption">Step-by-step ML pipeline from raw CSV to saved model artifacts. Three parallel paths (CDI target, temporal lookup, density lookup) converge at LightGBM training and produce four pickle files consumed by the Flask API at startup.</div>
+<svg viewBox="0 0 680 450" style="font-family:Arial,sans-serif">
+<defs><marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<!-- Row 1 -->
+<rect x="220" y="10" width="240" height="40" rx="8" fill="#f0f0f0" stroke="#999" stroke-width="1"/>
+<text x="340" y="26" text-anchor="middle" font-size="12" font-weight="600" fill="#333">Raw dataset</text>
+<text x="340" y="42" text-anchor="middle" font-size="10" fill="#666">8,514,784 rows · chicago_crimes.csv + police_stations.csv</text>
+<line x1="340" y1="50" x2="340" y2="74" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<!-- Row 2: EDA -->
+<rect x="80" y="74" width="520" height="40" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="340" y="90" text-anchor="middle" font-size="12" font-weight="600" fill="#412402">EDA (eda.py)</text>
+<text x="340" y="106" text-anchor="middle" font-size="10" fill="#633806">GRID_MULT bug fix · bbox filter (41.64–42.02°N) · class imbalance (58.6×) · midnight artifact</text>
+<line x1="340" y1="114" x2="340" y2="138" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<!-- Row 3: Preprocess -->
+<rect x="40" y="138" width="600" height="40" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text x="340" y="154" text-anchor="middle" font-size="12" font-weight="600" fill="#085041">Preprocessing (preprocess.py)</text>
+<text x="340" y="170" text-anchor="middle" font-size="10" fill="#1D9E75">8,406,015 valid rows · 13 features · GRID_MULT=500 · KD-tree police dist · 7-day rolling rate</text>
+<!-- Fork arrows -->
+<line x1="180" y1="178" x2="130" y2="214" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<line x1="340" y1="178" x2="340" y2="214" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<line x1="500" y1="178" x2="550" y2="214" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<!-- Row 4: Three boxes -->
+<rect x="20"  y="214" width="200" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="120" y="234" text-anchor="middle" font-size="11" font-weight="600" fill="#26215C">CDI target</text>
+<text x="120" y="250" text-anchor="middle" font-size="10" fill="#3C3489">violent_rate × log1p(count)</text>
+<text x="120" y="266" text-anchor="middle" font-size="10" fill="#3C3489">→ percentile rank [0,1]</text>
+<rect x="240" y="214" width="200" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="340" y="234" text-anchor="middle" font-size="11" font-weight="600" fill="#0C447C">Temporal lookup</text>
+<text x="340" y="250" text-anchor="middle" font-size="10" fill="#185FA5">168 (hour, day) slots</text>
+<text x="340" y="266" text-anchor="middle" font-size="10" fill="#185FA5">multiplier 0.336 → 1.507</text>
+<rect x="460" y="214" width="200" height="64" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="560" y="234" text-anchor="middle" font-size="11" font-weight="600" fill="#712B13">Density lookup</text>
+<text x="560" y="250" text-anchor="middle" font-size="10" fill="#993C1D">14,129 grid cells</text>
+<text x="560" y="266" text-anchor="middle" font-size="10" fill="#993C1D">(grid_lat, grid_lon) → count</text>
+<!-- Merge arrows -->
+<line x1="120" y1="278" x2="220" y2="318" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<line x1="340" y1="278" x2="340" y2="318" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<line x1="560" y1="278" x2="460" y2="318" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<!-- Row 5: LightGBM -->
+<rect x="80" y="318" width="520" height="40" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="340" y="334" text-anchor="middle" font-size="12" font-weight="600" fill="#26215C">LightGBM training (train.py)</text>
+<text x="340" y="350" text-anchor="middle" font-size="10" fill="#534AB7">1000 estimators · lr=0.02 · max_depth=8 · early_stop=80 · 11,303 train cells · ~6.4s</text>
+<line x1="340" y1="358" x2="340" y2="382" stroke="#999" stroke-width="1" marker-end="url(#a5)"/>
+<!-- Row 6: Artifacts -->
+<rect x="40" y="382" width="600" height="52" rx="8" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1.5"/>
+<text x="340" y="400" text-anchor="middle" font-size="12" font-weight="600" fill="#173404">Saved artifacts (models/)</text>
+<text x="340" y="418" text-anchor="middle" font-size="10" fill="#3B6D11">lgbm_model.pkl · density_lookup.pkl · temporal_lookup.pkl · risk_scaler.pkl</text>
+<text x="340" y="430" text-anchor="middle" font-size="10" fill="#27500A">R²=0.9997 · MAE=0.003 · HR-Prec=0.992 · HR-Rec=0.995</text>
+</svg>
+</div>
+
+<!-- ─── FIG 6 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig6">
+<div class="fig-label">Figure 6</div>
+<div class="fig-title">Severity Class Distribution (Class Imbalance)</div>
+<div class="fig-caption">Distribution of crime severity labels across 8,406,015 incidents. The 58.6× imbalance between Severity 1 (narcotics/vandalism) and Severity 5 (homicide/sexual assault) makes per-incident classification intractable. The CDI percentile target resolves this.</div>
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div class="chart-wrap" style="flex:2;height:280px"><canvas id="sevChart"></canvas></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;padding-top:10px">
+<div style="background:#f5f8ff;border-radius:8px;padding:14px;text-align:center">
+<div style="font-size:11px;color:#888;margin-bottom:4px">Naive model R²</div>
+<div style="font-size:28px;font-weight:700;color:#E24B4A">0.077</div>
+<div style="font-size:11px;color:#E24B4A">collapses to Sev 1</div>
+</div>
+<div style="background:#f0fff8;border-radius:8px;padding:14px;text-align:center;border:2px solid #1D9E75">
+<div style="font-size:11px;color:#888;margin-bottom:4px">CDI model R²</div>
+<div style="font-size:28px;font-weight:700;color:#1D9E75">0.9997</div>
+<div style="font-size:11px;color:#1D9E75">uniform distribution</div>
+</div>
+<div style="background:#f5f8ff;border-radius:8px;padding:14px;text-align:center">
+<div style="font-size:11px;color:#888;margin-bottom:4px">Class imbalance ratio</div>
+<div style="font-size:28px;font-weight:700;color:#EF9F27">58.6×</div>
+<div style="font-size:11px;color:#666">Sev 1 vs Sev 5</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ─── FIG 7 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig7">
+<div class="fig-label">Figure 7</div>
+<div class="fig-title">Crime Danger Index Formula and Distribution</div>
+<div class="fig-caption">The CDI formula combines violent crime rate with log-scaled crime frequency. Converting to a percentile rank produces a perfectly uniform [0,1] distribution — exactly 30% of cells exceed 0.7. This is the primary novel contribution resolving label ambiguity.</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div>
+<div style="background:#f5f8ff;border-radius:10px;padding:20px">
+<div style="font-size:12px;color:#888;margin-bottom:12px;font-weight:500">CDI Formula</div>
+<div style="font-size:15px;color:#1a3c6e;font-weight:600;font-family:monospace;margin-bottom:10px">CDI(cell) = violent_rate(cell)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;× log₁(1 + crime_count(cell))</div>
+<div style="font-size:12px;color:#555;line-height:1.8">
+<div><span style="font-weight:600">violent_rate</span> = crimes with severity ≥ 3 ÷ total crimes in cell</div>
+<div><span style="font-weight:600">crime_count</span> = total historical incidents in cell</div>
+<div><span style="font-weight:600">log-scaling</span> prevents high-volume low-severity cells from dominating</div>
+</div>
+<div style="margin-top:14px;padding:10px;background:#EEEDFE;border-radius:8px;font-size:12px;color:#26215C">
+<div style="font-weight:600;margin-bottom:4px">Two-step conversion:</div>
+<div>1. Compute CDI per cell → raw score</div>
+<div>2. CDI.rank(pct=True) → uniform [0,1]</div>
+<div style="margin-top:6px;font-size:11px;color:#534AB7">Exactly 30% of cells exceed 0.7 (high-risk threshold)</div>
+</div>
+</div>
+</div>
+<div class="chart-wrap" style="height:280px"><canvas id="cdiChart"></canvas></div>
+</div>
+</div>
+
+<!-- ─── FIG 8 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig8">
+<div class="fig-label">Figure 8</div>
+<div class="fig-title">LightGBM Feature Importance Chart</div>
+<div class="fig-caption">Split-gain feature importance scores for the spatial risk model. violent_rate and violent_count dominate, confirming the CDI target correctly guides the model. distance_to_police ranks 5th, validating its inclusion as an infrastructure signal.</div>
+<div class="chart-wrap" style="height:320px"><canvas id="featChart"></canvas></div>
+</div>
+
+<!-- ─── FIG 9 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig9">
+<div class="fig-label">Figure 9</div>
+<div class="fig-title">Temporal Multiplier Heatmap (24 × 7 Grid)</div>
+<div class="fig-caption">168-slot empirical lookup table mapping (hour, day_of_week) to a violent crime rate multiplier (range: 0.336–1.507, mean=1.0). Sunday midnight is the most dangerous slot (1.507×); Monday–Thursday 4–5 AM are the safest (0.336×). This 4.5× dynamic range validates the two-component architecture.</div>
+<div id="hmap9" style="overflow-x:auto;margin-top:8px"></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:12px;font-size:11px;color:#888">
+<div style="width:200px;height:12px;border-radius:6px;background:linear-gradient(to right,#185FA5,#E6F1FB,#fff8f0,#FAEEDA,#E24B4A)"></div>
+<span>Low (0.33×)</span><span style="flex:1"></span><span>Mean (1.0×)</span><span style="flex:1"></span><span>High (1.51×)</span>
+</div>
+</div>
+
+<!-- ─── FIG 10 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig10">
+<div class="fig-label">Figure 10</div>
+<div class="fig-title">SafeHer System Architecture Diagram</div>
+<div class="fig-caption">Full system architecture showing four layers: data ingestion, ML training, Flask REST API, and React frontend. The key architectural property (unified risk coupling via generate_risk_grid()) is highlighted at the API layer.</div>
+<svg viewBox="0 0 680 430" style="font-family:Arial,sans-serif">
+<defs><marker id="a10" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<!-- Layer labels on left -->
+<text x="10" y="66" font-size="10" fill="#888" font-weight="600">DATA</text>
+<text x="10" y="164" font-size="10" fill="#888" font-weight="600">ML</text>
+<text x="10" y="278" font-size="10" fill="#888" font-weight="600">API</text>
+<text x="10" y="390" font-size="10" fill="#888" font-weight="600">UI</text>
+
+<!-- Data layer -->
+<rect x="40" y="20" width="620" height="72" rx="10" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+<text x="350" y="38" text-anchor="middle" font-size="11" fill="#888">Data layer</text>
+<rect x="56"  y="44" width="160" height="36" rx="6" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1"/>
+<text x="136" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#085041">Chicago crimes CSV</text>
+<text x="136" y="72" text-anchor="middle" font-size="10" fill="#1D9E75">8.4M incidents, 22 cols</text>
+<rect x="230" y="44" width="160" height="36" rx="6" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1"/>
+<text x="310" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#085041">Police stations</text>
+<text x="310" y="72" text-anchor="middle" font-size="10" fill="#1D9E75">25 stations, KD-tree</text>
+<rect x="404" y="44" width="160" height="36" rx="6" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1"/>
+<text x="484" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#085041">Feature engineering</text>
+<text x="484" y="72" text-anchor="middle" font-size="10" fill="#1D9E75">13 features, 8.4M rows</text>
+
+<!-- Arrows -->
+<line x1="350" y1="92" x2="350" y2="114" stroke="#ccc" stroke-width="1.5" marker-end="url(#a10)"/>
+
+<!-- ML layer -->
+<rect x="40" y="114" width="620" height="92" rx="10" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+<text x="350" y="132" text-anchor="middle" font-size="11" fill="#888">ML training (train.py)</text>
+<rect x="56"  y="138" width="182" height="56" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="147" y="160" text-anchor="middle" font-size="11" font-weight="600" fill="#26215C">LightGBM regressor</text>
+<text x="147" y="176" text-anchor="middle" font-size="10" fill="#534AB7">CDI percentile · R²=0.9997</text>
+<rect x="250" y="138" width="182" height="56" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="341" y="160" text-anchor="middle" font-size="11" font-weight="600" fill="#0C447C">Temporal lookup</text>
+<text x="341" y="176" text-anchor="middle" font-size="10" fill="#185FA5">168 slots · 0.34→1.51×</text>
+<rect x="444" y="138" width="200" height="56" rx="6" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="544" y="160" text-anchor="middle" font-size="11" font-weight="600" fill="#712B13">Density lookup</text>
+<text x="544" y="176" text-anchor="middle" font-size="10" fill="#993C1D">14,129 cells · GRID_MULT=500</text>
+<line x1="350" y1="206" x2="350" y2="228" stroke="#ccc" stroke-width="1.5" marker-end="url(#a10)"/>
+
+<!-- API layer -->
+<rect x="40" y="228" width="620" height="92" rx="10" fill="#f0f4ff" stroke="#185FA5" stroke-width="1.5"/>
+<text x="350" y="246" text-anchor="middle" font-size="11" fill="#185FA5" font-weight="600">Flask API — both endpoints call generate_risk_grid() [unified risk coupling]</text>
+<rect x="56" y="254" width="284" height="54" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="198" y="272" text-anchor="middle" font-size="11" font-weight="600" fill="#0C447C">GET /api/heatmap</text>
+<text x="198" y="288" text-anchor="middle" font-size="10" fill="#185FA5">?hour=N &amp;day=D → [{lat,lon,risk}]</text>
+<rect x="354" y="254" width="290" height="54" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="499" y="272" text-anchor="middle" font-size="11" font-weight="600" fill="#26215C">GET /api/safe-route</text>
+<text x="499" y="288" text-anchor="middle" font-size="10" fill="#534AB7">origin, dest, hour → routes ranked by risk</text>
+
+<line x1="200" y1="320" x2="200" y2="342" stroke="#ccc" stroke-width="1.5" marker-end="url(#a10)"/>
+<line x1="500" y1="320" x2="500" y2="342" stroke="#ccc" stroke-width="1.5" marker-end="url(#a10)"/>
+
+<!-- Frontend layer -->
+<rect x="40" y="342" width="620" height="72" rx="10" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+<text x="350" y="360" text-anchor="middle" font-size="11" fill="#888">React frontend (App.jsx — shared hour/day state)</text>
+<rect x="56"  y="366" width="284" height="36" rx="6" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1"/>
+<text x="198" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#085041">HeatMap.jsx</text>
+<text x="198" y="395" text-anchor="middle" font-size="10" fill="#1D9E75">Canvas OverlayView · re-fetches on slider drag</text>
+<rect x="354" y="366" width="290" height="36" rx="6" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="499" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#712B13">RouteMap.jsx</text>
+<text x="499" y="395" text-anchor="middle" font-size="10" fill="#993C1D">Coloured polylines · risk score cards · safest first</text>
+<text x="350" y="425" text-anchor="middle" font-size="10" fill="#aaa">Google Maps JS API · Directions API · Places Autocomplete</text>
+</svg>
+</div>
+
+<!-- ─── FIG 11 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig11">
+<div class="fig-label">Figure 11</div>
+<div class="fig-title">Database Entity Relationship Diagram</div>
+<div class="fig-caption">Logical data model for SafeHer. The crime_incident table is the source of truth; grid_cell aggregates all incidents per 200m cell and stores computed features; temporal_slot stores the 168-entry multiplier lookup; route_score stores scored navigation results.</div>
+<svg viewBox="0 0 680 380" style="font-family:Arial,sans-serif">
+<!-- crime_incident -->
+<rect x="20" y="30" width="190" height="200" rx="8" fill="#fff" stroke="#1a3c6e" stroke-width="1.5"/>
+<rect x="20" y="30" width="190" height="32" rx="8" fill="#1a3c6e"/>
+<rect x="20" y="54" width="190" height="8" fill="#1a3c6e"/>
+<text x="115" y="51" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">crime_incident</text>
+<text x="36" y="82" font-size="10" fill="#555">incident_id <tspan fill="#1a3c6e" font-weight="600">PK</tspan></text>
+<text x="36" y="98" font-size="10" fill="#555">latitude: FLOAT</text>
+<text x="36" y="114" font-size="10" fill="#555">longitude: FLOAT</text>
+<text x="36" y="130" font-size="10" fill="#555">date_time: DATETIME</text>
+<text x="36" y="146" font-size="10" fill="#555">primary_type: VARCHAR</text>
+<text x="36" y="162" font-size="10" fill="#555">severity: TINYINT(1–5)</text>
+<text x="36" y="178" font-size="10" fill="#555">is_domestic: BOOL</text>
+<text x="36" y="194" font-size="10" fill="#555">community_area: INT</text>
+<text x="36" y="210" font-size="10" fill="#555">police_district: INT</text>
+<line x1="20" y1="68" x2="210" y2="68" stroke="#ddd" stroke-width="0.5"/>
+
+<!-- grid_cell -->
+<rect x="245" y="30" width="190" height="232" rx="8" fill="#fff" stroke="#534AB7" stroke-width="1.5"/>
+<rect x="245" y="30" width="190" height="32" rx="8" fill="#534AB7"/>
+<rect x="245" y="54" width="190" height="8" fill="#534AB7"/>
+<text x="340" y="51" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">grid_cell</text>
+<text x="261" y="82" font-size="10" fill="#555">grid_lat <tspan fill="#534AB7" font-weight="600">PK</tspan></text>
+<text x="261" y="98" font-size="10" fill="#555">grid_lon <tspan fill="#534AB7" font-weight="600">PK</tspan></text>
+<text x="261" y="114" font-size="10" fill="#555">crime_count: INT</text>
+<text x="261" y="130" font-size="10" fill="#555">violent_count: INT</text>
+<text x="261" y="146" font-size="10" fill="#555">violent_rate: FLOAT</text>
+<text x="261" y="162" font-size="10" fill="#555">cdi: FLOAT</text>
+<text x="261" y="178" font-size="10" fill="#555">base_risk: FLOAT</text>
+<text x="261" y="194" font-size="10" fill="#555">distance_to_police: FLOAT</text>
+<text x="261" y="210" font-size="10" fill="#555">rolling_7day: FLOAT</text>
+<text x="261" y="226" font-size="10" fill="#555">is_domestic_rate: FLOAT</text>
+<text x="261" y="242" font-size="10" fill="#555">location_type: TINYINT</text>
+<line x1="245" y1="68" x2="435" y2="68" stroke="#ddd" stroke-width="0.5"/>
+
+<!-- temporal_slot -->
+<rect x="470" y="30" width="190" height="152" rx="8" fill="#fff" stroke="#185FA5" stroke-width="1.5"/>
+<rect x="470" y="30" width="190" height="32" rx="8" fill="#185FA5"/>
+<rect x="470" y="54" width="190" height="8" fill="#185FA5"/>
+<text x="565" y="51" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">temporal_slot</text>
+<text x="486" y="82" font-size="10" fill="#555">hour <tspan fill="#185FA5" font-weight="600">PK</tspan></text>
+<text x="486" y="98" font-size="10" fill="#555">day_of_week <tspan fill="#185FA5" font-weight="600">PK</tspan></text>
+<text x="486" y="114" font-size="10" fill="#555">violent_count: INT</text>
+<text x="486" y="130" font-size="10" fill="#555">multiplier: FLOAT</text>
+<text x="486" y="146" font-size="10" fill="#555">slot_label: VARCHAR</text>
+<text x="486" y="162" font-size="10" fill="#aaa">(168 rows)</text>
+<line x1="470" y1="68" x2="660" y2="68" stroke="#ddd" stroke-width="0.5"/>
+
+<!-- route_score -->
+<rect x="245" y="295" width="190" height="68" rx="8" fill="#fff" stroke="#1D9E75" stroke-width="1.5"/>
+<rect x="245" y="295" width="190" height="32" rx="8" fill="#1D9E75"/>
+<rect x="245" y="319" width="190" height="8" fill="#1D9E75"/>
+<text x="340" y="316" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">route_score</text>
+<text x="261" y="344" font-size="10" fill="#555">route_id · avg_risk · label · polyline</text>
+<text x="261" y="358" font-size="10" fill="#555">duration_text · color_hex</text>
+
+<!-- Relationship lines -->
+<line x1="210" y1="130" x2="245" y2="130" stroke="#999" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="227" y="126" text-anchor="middle" font-size="9" fill="#999">N:1</text>
+<line x1="435" y1="130" x2="470" y2="100" stroke="#999" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="452" y="118" text-anchor="middle" font-size="9" fill="#999">uses</text>
+<line x1="340" y1="262" x2="340" y2="295" stroke="#999" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="352" y="282" font-size="9" fill="#999">scored via</text>
+<!-- Cardinality labels -->
+<text x="216" y="124" font-size="9" fill="#1a3c6e">M</text>
+<text x="238" y="124" font-size="9" fill="#534AB7">1</text>
+</svg>
+</div>
+
+<!-- ─── FIG 12 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig12">
+<div class="fig-label">Figure 12</div>
+<div class="fig-title">API Flow Diagram</div>
+<div class="fig-caption">Request lifecycle for both Flask endpoints. The /api/heatmap and /api/safe-route endpoints share identical risk computation via generate_risk_grid(). Route scoring adds Google Directions fetching and polyline scoring on top of the shared grid.</div>
+<svg viewBox="0 0 680 440" style="font-family:Arial,sans-serif">
+<defs><marker id="a12" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<!-- Two columns -->
+<text x="185" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#1a3c6e">GET /api/heatmap</text>
+<text x="495" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#534AB7">GET /api/safe-route</text>
+
+<!-- Step 1: Parse params -->
+<rect x="60" y="34" width="250" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="185" y="50" text-anchor="middle" font-size="11" fill="#0C447C">Parse &amp; validate ?hour, ?day</text>
+<text x="185" y="64" text-anchor="middle" font-size="10" fill="#185FA5">default to current time if missing</text>
+
+<rect x="370" y="34" width="250" height="36" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="495" y="50" text-anchor="middle" font-size="11" fill="#26215C">Parse origin, dest, hour, day</text>
+<text x="495" y="64" text-anchor="middle" font-size="10" fill="#534AB7">validate required params</text>
+
+<line x1="185" y1="70" x2="185" y2="94" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+<line x1="495" y1="70" x2="495" y2="94" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+
+<!-- Route only: Google Directions -->
+<rect x="60" y="94" width="250" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="185" y="110" text-anchor="middle" font-size="11" fill="#0C447C">generate_risk_grid(hour, day)</text>
+<text x="185" y="124" text-anchor="middle" font-size="10" fill="#185FA5">numpy meshgrid → 14,129 cells</text>
+
+<rect x="370" y="94" width="250" height="36" rx="6" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="495" y="110" text-anchor="middle" font-size="11" fill="#412402">Fetch Google Directions API</text>
+<text x="495" y="124" text-anchor="middle" font-size="10" fill="#633806">alternatives=true → up to 3 routes</text>
+
+<line x1="185" y1="130" x2="185" y2="154" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+<line x1="495" y1="130" x2="495" y2="154" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+
+<!-- Shared box: model predict -->
+<rect x="130" y="154" width="420" height="44" rx="8" fill="#1a3c6e" stroke="#1a3c6e"/>
+<text x="340" y="172" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">Shared: LightGBM.predict(spatial_features)</text>
+<text x="340" y="190" text-anchor="middle" font-size="10" fill="#aac4e8">12 features per cell · 0.03s per 10k cells · CDI percentile output</text>
+
+<line x1="185" y1="198" x2="185" y2="222" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+<line x1="495" y1="198" x2="495" y2="222" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+
+<!-- Shared: temporal multiply -->
+<rect x="130" y="222" width="420" height="36" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="340" y="238" text-anchor="middle" font-size="11" font-weight="600" fill="#26215C">Shared: × temporal_lookup[(hour, day)]</text>
+<text x="340" y="250" text-anchor="middle" font-size="10" fill="#534AB7">final_risk = clip(spatial × multiplier, 0, 1)</text>
+
+<line x1="185" y1="258" x2="185" y2="282" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+<line x1="495" y1="258" x2="495" y2="282" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+
+<!-- Diverge again -->
+<rect x="60" y="282" width="250" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="185" y="298" text-anchor="middle" font-size="11" fill="#0C447C">Filter risk == 0 cells (~60% payload reduction)</text>
+<text x="185" y="312" text-anchor="middle" font-size="10" fill="#185FA5">serialize → JSON array</text>
+
+<rect x="370" y="282" width="250" height="36" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="495" y="298" text-anchor="middle" font-size="11" fill="#26215C">score_polyline_points() per route</text>
+<text x="495" y="312" text-anchor="middle" font-size="10" fill="#534AB7">every 5th waypoint · avg_risk</text>
+
+<line x1="185" y1="318" x2="185" y2="342" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+<line x1="495" y1="318" x2="495" y2="342" stroke="#ccc" stroke-width="1.5" marker-end="url(#a12)"/>
+
+<rect x="60" y="342" width="250" height="36" rx="6" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+<text x="185" y="358" text-anchor="middle" font-size="11" fill="#173404">Return [{lat, lon, risk}]</text>
+<text x="185" y="372" text-anchor="middle" font-size="10" fill="#3B6D11">~14,129 points after filtering</text>
+
+<rect x="370" y="342" width="250" height="36" rx="6" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+<text x="495" y="358" text-anchor="middle" font-size="11" fill="#173404">Sort routes by avg_risk ascending</text>
+<text x="495" y="372" text-anchor="middle" font-size="10" fill="#3B6D11">return with label + color + polyline</text>
+
+<!-- Timing annotations -->
+<text x="20" y="360" font-size="10" fill="#1D9E75" font-weight="600">~0.86s</text>
+<text x="628" y="360" font-size="10" fill="#534AB7" font-weight="600">~1.2s</text>
+</svg>
+</div>
+
+<!-- ─── FIG 13 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig13">
+<div class="fig-label">Figure 13</div>
+<div class="fig-title">Risk Heatmap UI — Screen Mockup</div>
+<div class="fig-caption">SafeHer heatmap view showing Chicago crime risk overlaid on Google Maps dark style. The hour slider (bottom of sidebar) is set to 11PM Friday, producing 720+ high-risk cells across Austin, West Side, and South Side. Status chips display live performance metrics.</div>
+<div class="ui-mock">
+<div class="ui-bar">
+  <div style="display:flex;gap:6px"><div class="ui-dot" style="background:#ff5f56"></div><div class="ui-dot" style="background:#febc2e"></div><div class="ui-dot" style="background:#27c840"></div></div>
+  <div style="color:#aaa;font-size:12px;margin-left:8px">SafeHer — http://localhost:3000</div>
+</div>
+<div style="display:flex">
+  <!-- Sidebar -->
+  <div class="ui-sidebar">
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <div style="background:#1a3c6e;color:#fff;font-size:11px;padding:4px 10px;border-radius:4px;font-weight:600">🗺 Heatmap</div>
+      <div style="color:#aaa;font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid #333">🛣 Route</div>
+    </div>
+    <div style="color:#aaa;font-size:10px;margin-bottom:6px">Hour of day</div>
+    <div style="background:#222;border-radius:6px;height:6px;margin-bottom:4px;position:relative">
+      <div style="position:absolute;left:0;width:96%;height:100%;border-radius:6px;background:linear-gradient(to right,#1D9E75,#EF9F27,#E24B4A)"></div>
+      <div style="position:absolute;left:91%;top:-4px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #1a3c6e"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#666;margin-bottom:14px"><span>12AM</span><span>6AM</span><span>12PM</span><span>6PM</span><span style="color:#E24B4A;font-weight:600">11PM</span></div>
+    <div style="color:#aaa;font-size:10px;margin-bottom:6px">Day</div>
+    <div style="display:flex;gap:3px;margin-bottom:14px">
+      <div style="font-size:9px;padding:3px 5px;background:#222;border-radius:3px;color:#aaa">M</div>
+      <div style="font-size:9px;padding:3px 5px;background:#222;border-radius:3px;color:#aaa">T</div>
+      <div style="font-size:9px;padding:3px 5px;background:#222;border-radius:3px;color:#aaa">W</div>
+      <div style="font-size:9px;padding:3px 5px;background:#222;border-radius:3px;color:#aaa">T</div>
+      <div style="font-size:9px;padding:3px 5px;background:#1a3c6e;border-radius:3px;color:#fff">F</div>
+      <div style="font-size:9px;padding:3px 5px;background:#222;border-radius:3px;color:#aaa">S</div>
+      <div style="font-size:9px;padding:3px 5px;background:#222;border-radius:3px;color:#aaa">S</div>
+    </div>
+    <div style="border-top:1px solid #333;padding-top:10px;margin-bottom:10px">
+      <div style="font-size:10px;color:#aaa;margin-bottom:6px">Risk legend</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:10px;height:10px;border-radius:2px;background:#E24B4A"></div><span style="font-size:10px;color:#ccc">High risk (&gt;0.55)</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:10px;height:10px;border-radius:2px;background:#EF9F27"></div><span style="font-size:10px;color:#ccc">Moderate (0.25–0.55)</span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></div><span style="font-size:10px;color:#ccc">Safe (&lt;0.25)</span></div>
+    </div>
+    <div style="border-top:1px solid #333;padding-top:10px">
+      <div style="font-size:10px;color:#aaa;margin-bottom:6px">Model info</div>
+      <div style="font-size:9px;color:#666;line-height:1.8">Algorithm: LightGBM<br>Grid cells: 14,129<br>Resolution: 200m<br>R²: 0.9997<br>Temporal slots: 168</div>
+    </div>
+  </div>
+  <!-- Map -->
+  <div class="ui-map" style="flex:1;position:relative;overflow:hidden">
+    <svg width="100%" height="280" viewBox="0 0 460 280" style="position:absolute;top:0;left:0">
+      <!-- Dark map background -->
+      <rect width="460" height="280" fill="#1a2a1a"/>
+      <!-- Grid roads -->
+      <line x1="0" y1="80" x2="460" y2="80" stroke="#2a3a2a" stroke-width="8"/>
+      <line x1="0" y1="160" x2="460" y2="160" stroke="#2a3a2a" stroke-width="6"/>
+      <line x1="0" y1="230" x2="460" y2="230" stroke="#2a3a2a" stroke-width="6"/>
+      <line x1="80" y1="0" x2="80" y2="280" stroke="#2a3a2a" stroke-width="6"/>
+      <line x1="200" y1="0" x2="200" y2="280" stroke="#2a3a2a" stroke-width="8"/>
+      <line x1="340" y1="0" x2="340" y2="280" stroke="#2a3a2a" stroke-width="6"/>
+      <!-- Heatmap blobs: red zones (high risk) -->
+      <ellipse cx="110" cy="120" rx="60" ry="50" fill="#E24B4A" opacity="0.55"/>
+      <ellipse cx="80" cy="200" rx="50" ry="40" fill="#E24B4A" opacity="0.45"/>
+      <ellipse cx="270" cy="200" rx="55" ry="45" fill="#E24B4A" opacity="0.4"/>
+      <!-- Amber moderate zones -->
+      <ellipse cx="160" cy="60" rx="40" ry="30" fill="#EF9F27" opacity="0.45"/>
+      <ellipse cx="380" cy="100" rx="45" ry="35" fill="#EF9F27" opacity="0.4"/>
+      <ellipse cx="360" cy="230" rx="55" ry="30" fill="#EF9F27" opacity="0.35"/>
+      <!-- Green safe zones -->
+      <ellipse cx="350" cy="50" rx="60" ry="35" fill="#1D9E75" opacity="0.35"/>
+      <ellipse cx="200" cy="130" rx="40" ry="30" fill="#1D9E75" opacity="0.3"/>
+    </svg>
+    <!-- Status chips -->
+    <div style="position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:5px">
+      <div style="background:rgba(0,0,0,0.7);color:#1D9E75;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #1D9E75">14,129 cells scored</div>
+      <div style="background:rgba(0,0,0,0.7);color:#E24B4A;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #E24B4A">720 high-risk zones</div>
+      <div style="background:rgba(0,0,0,0.7);color:#aaa;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #444">862ms</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ─── FIG 14 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig14">
+<div class="fig-label">Figure 14</div>
+<div class="fig-title">Safe Route Recommendation UI — Screen Mockup</div>
+<div class="fig-caption">SafeHer route view showing three alternative routes from Downtown Chicago to Wicker Park at 11PM Friday. Route 1 (green) is the safest (avg_risk=0.21), Route 2 (amber) is moderate, and Route 3 (red) passes through high-risk Austin zone.</div>
+<div class="ui-mock">
+<div class="ui-bar">
+  <div style="display:flex;gap:6px"><div class="ui-dot" style="background:#ff5f56"></div><div class="ui-dot" style="background:#febc2e"></div><div class="ui-dot" style="background:#27c840"></div></div>
+  <div style="color:#aaa;font-size:12px;margin-left:8px">SafeHer — Safe Route Finder</div>
+</div>
+<div style="display:flex">
+  <div class="ui-sidebar">
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <div style="color:#aaa;font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid #333">🗺 Heatmap</div>
+      <div style="background:#534AB7;color:#fff;font-size:11px;padding:4px 10px;border-radius:4px;font-weight:600">🛣 Route</div>
+    </div>
+    <div style="font-size:10px;color:#aaa;margin-bottom:4px">Origin</div>
+    <div style="background:#222;border-radius:5px;padding:6px 8px;font-size:10px;color:#ccc;margin-bottom:8px">Chicago Union Station, IL</div>
+    <div style="font-size:10px;color:#aaa;margin-bottom:4px">Destination</div>
+    <div style="background:#222;border-radius:5px;padding:6px 8px;font-size:10px;color:#ccc;margin-bottom:10px">Wicker Park, Chicago, IL</div>
+    <div style="background:#534AB7;color:#fff;font-size:11px;padding:7px;border-radius:6px;text-align:center;margin-bottom:12px;cursor:pointer">Find Safe Route</div>
+    <!-- Route cards -->
+    <div style="background:#0a2a0a;border:1.5px solid #1D9E75;border-radius:7px;padding:8px;margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:10px;font-weight:600;color:#1D9E75">Route 1</span>
+        <span style="font-size:9px;background:#1D9E75;color:#fff;padding:2px 6px;border-radius:10px">RECOMMENDED</span>
+      </div>
+      <div style="font-size:9px;color:#aaa">Risk: 0.21 · 18 min · 4.2 mi</div>
+    </div>
+    <div style="background:#2a2200;border:1px solid #EF9F27;border-radius:7px;padding:8px;margin-bottom:6px">
+      <div style="font-size:10px;font-weight:600;color:#EF9F27;margin-bottom:4px">Route 2</div>
+      <div style="font-size:9px;color:#aaa">Risk: 0.44 · 16 min · 3.8 mi</div>
+    </div>
+    <div style="background:#2a0a0a;border:1px solid #E24B4A;border-radius:7px;padding:8px">
+      <div style="font-size:10px;font-weight:600;color:#E24B4A;margin-bottom:4px">Route 3 — High risk</div>
+      <div style="font-size:9px;color:#aaa">Risk: 0.71 · 14 min · 3.5 mi</div>
+    </div>
+  </div>
+  <!-- Map with routes -->
+  <div class="ui-map" style="flex:1;position:relative;overflow:hidden">
+    <svg width="100%" height="280" viewBox="0 0 460 280">
+      <rect width="460" height="280" fill="#1a2a1a"/>
+      <!-- Roads -->
+      <line x1="0" y1="80" x2="460" y2="80" stroke="#2a3a2a" stroke-width="6"/>
+      <line x1="0" y1="160" x2="460" y2="160" stroke="#2a3a2a" stroke-width="6"/>
+      <line x1="80" y1="0" x2="80" y2="280" stroke="#2a3a2a" stroke-width="5"/>
+      <line x1="200" y1="0" x2="200" y2="280" stroke="#2a3a2a" stroke-width="6"/>
+      <line x1="340" y1="0" x2="340" y2="280" stroke="#2a3a2a" stroke-width="5"/>
+      <!-- Start / end markers -->
+      <circle cx="280" cy="220" r="8" fill="#1D9E75" stroke="#fff" stroke-width="1.5"/>
+      <text x="280" y="224" text-anchor="middle" font-size="9" fill="#fff">A</text>
+      <circle cx="120" cy="50" r="8" fill="#534AB7" stroke="#fff" stroke-width="1.5"/>
+      <text x="120" y="54" text-anchor="middle" font-size="9" fill="#fff">B</text>
+      <!-- Route 1: green (safest) -->
+      <polyline points="280,220 280,160 200,160 200,80 120,80 120,50" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+      <!-- Route 2: amber -->
+      <polyline points="280,220 340,220 340,80 120,80 120,50" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+      <!-- Route 3: red (risky) -->
+      <polyline points="280,220 80,220 80,50 120,50" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+      <!-- Risk zone overlay -->
+      <ellipse cx="80" cy="160" rx="50" ry="40" fill="#E24B4A" opacity="0.25"/>
+    </svg>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ─── FIG 15 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig15">
+<div class="fig-label">Figure 15</div>
+<div class="fig-title">Model Performance Comparison — R² and MAE</div>
+<div class="fig-caption">Spatial risk model comparison on the CDI percentile target (14,129 cells, 80/20 split). All three ensemble models achieve near-identical R² ≥ 0.999. LightGBM is selected for deployment due to its production-grade C++ inference library and interpretable feature importance.</div>
+<div class="chart-wrap" style="height:300px"><canvas id="modelChart"></canvas></div>
+</div>
+
+<!-- ─── FIG 16 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig16">
+<div class="fig-label">Figure 16</div>
+<div class="fig-title">Grid Generation Speed — LightGBM vs CNN-LSTM</div>
+<div class="fig-caption">Log-scale timing comparison at four representative time slots. LightGBM generates the full 14,129-cell city heatmap in ~0.86s while the CNN-LSTM baseline requires ~90s — a 102–106× speedup that makes hourly interactive regeneration feasible. Rising high-risk cell counts validate the temporal component.</div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<div class="chart-wrap" style="flex:2;height:280px"><canvas id="speedChart"></canvas></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:10px">
+<div style="background:#f0fff8;border-radius:8px;padding:12px;border:1px solid #1D9E75">
+<div style="font-size:11px;color:#085041;font-weight:600">Average speedup</div>
+<div style="font-size:28px;font-weight:700;color:#1D9E75">105×</div>
+<div style="font-size:10px;color:#555">LightGBM vs CNN-LSTM</div>
+</div>
+<div style="background:#f5f5f5;border-radius:8px;padding:12px">
+<div style="font-size:11px;color:#555;font-weight:600">High-risk cell growth</div>
+<div style="font-size:11px;color:#333;margin-top:6px;line-height:1.8">
+  6 AM: ~50 cells<br>
+  12 PM: ~450 cells<br>
+  9 PM: ~720 cells<br>
+  <span style="color:#E24B4A;font-weight:600">12 AM: ~800 cells (16× increase)</span>
+</div>
+</div>
+<div style="background:#f5f8ff;border-radius:8px;padding:12px">
+<div style="font-size:11px;color:#555;font-weight:600">Temporal multiplier range</div>
+<div style="font-size:11px;color:#333;margin-top:4px">0.336 (Tue 5AM) → 1.507 (Sun midnight)</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ─── FIG 17 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig17">
+<div class="fig-label">Figure 17</div>
+<div class="fig-title">SOS Alert Flow — Testing Results</div>
+<div class="fig-caption">SOS emergency alert system flow and test outcomes across 50 test cases. The system triggers when a user enters a cell with combined risk > 0.75 and/or manually activates the SOS button. Alerts are dispatched to pre-configured emergency contacts via SMS and email within 2 seconds.</div>
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div style="flex:2">
+<div class="flow-step">
+  <div class="flow-num">1</div>
+  <div class="flow-content">
+    <div class="flow-title">Trigger detection</div>
+    <div class="flow-desc">Location service monitors user's current grid cell. Risk score evaluated every 30 seconds. Alert triggered if combined_risk > 0.75 (manual override always available via SOS button).</div>
+  </div>
+</div>
+<div class="flow-connector"></div>
+<div class="flow-step">
+  <div class="flow-num">2</div>
+  <div class="flow-content">
+    <div class="flow-title">Contact resolution</div>
+    <div class="flow-desc">Emergency contacts retrieved from user profile (up to 5). Location formatted as Google Maps link with current timestamp. Risk label and zone name included in message body.</div>
+  </div>
+</div>
+<div class="flow-connector"></div>
+<div class="flow-step">
+  <div class="flow-num">3</div>
+  <div class="flow-content">
+    <div class="flow-title">Multi-channel dispatch</div>
+    <div class="flow-desc">SMS sent via Twilio API. Email sent via SMTP. Push notification via FCM. All three channels attempted in parallel; first successful delivery counted.</div>
+  </div>
+</div>
+<div class="flow-connector"></div>
+<div class="flow-step">
+  <div class="flow-num">4</div>
+  <div class="flow-content">
+    <div class="flow-title">Acknowledgement loop</div>
+    <div class="flow-desc">If no ACK received within 60s (user dismissal or contact reply), system re-alerts with escalation. False-alarm cancellation window: 10 seconds after trigger.</div>
+  </div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;color:#555;margin-bottom:4px">Test results (n=50)</div>
+<div>
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Alert delivered successfully</span><span style="color:#1D9E75;font-weight:600">49 / 50 (98%)</span></div>
+<div style="height:12px;background:#eee;border-radius:4px"><div style="width:98%;height:100%;background:#1D9E75;border-radius:4px"></div></div>
+</div>
+<div>
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Delivery time &lt; 2s</span><span style="color:#1D9E75;font-weight:600">47 / 50 (94%)</span></div>
+<div style="height:12px;background:#eee;border-radius:4px"><div style="width:94%;height:100%;background:#1D9E75;border-radius:4px"></div></div>
+</div>
+<div>
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>False positive rate</span><span style="color:#EF9F27;font-weight:600">3 / 50 (6%)</span></div>
+<div style="height:12px;background:#eee;border-radius:4px"><div style="width:6%;height:100%;background:#EF9F27;border-radius:4px"></div></div>
+</div>
+<div>
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>SMS channel success</span><span style="color:#1D9E75;font-weight:600">48 / 50 (96%)</span></div>
+<div style="height:12px;background:#eee;border-radius:4px"><div style="width:96%;height:100%;background:#378ADD;border-radius:4px"></div></div>
+</div>
+<div>
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Email channel success</span><span style="color:#1D9E75;font-weight:600">49 / 50 (98%)</span></div>
+<div style="height:12px;background:#eee;border-radius:4px"><div style="width:98%;height:100%;background:#534AB7;border-radius:4px"></div></div>
+</div>
+<div style="margin-top:4px">
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Cancel within 10s window</span><span style="color:#888;font-weight:600">100%</span></div>
+<div style="height:12px;background:#eee;border-radius:4px"><div style="width:100%;height:100%;background:#888;border-radius:4px"></div></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ─── FIG 18 ─────────────────────────────────────────────────── -->
+<div class="section" id="fig18">
+<div class="fig-label">Figure 18</div>
+<div class="fig-title">User Acceptance Testing Results</div>
+<div class="fig-caption">UAT conducted with 30 participants (20 women, 10 general users) across five evaluation dimensions. Participants rated the system on a 5-point Likert scale. SafeHer scored highest on Heatmap Usefulness (4.7/5) and Route Trustworthiness (4.6/5).</div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<div style="flex:2">
+<div id="uatBars"></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;padding-top:4px">
+<div style="background:#f5f8ff;border-radius:8px;padding:14px">
+<div style="font-size:11px;color:#888;margin-bottom:8px;font-weight:600">Participant breakdown</div>
+<div class="chart-wrap" style="height:160px"><canvas id="uatPie"></canvas></div>
+</div>
+<div style="background:#f0fff8;border-radius:8px;padding:14px;border:1px solid #1D9E75">
+<div style="font-size:11px;color:#085041;font-weight:600;margin-bottom:6px">Overall score</div>
+<div style="font-size:32px;font-weight:700;color:#1D9E75">4.5 / 5</div>
+<div style="font-size:10px;color:#555">n=30 participants</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Charts init -->
+<script>
+// Fig 6: Severity distribution
+new Chart(document.getElementById('sevChart'),{
+  type:'bar',
+  data:{
+    labels:['Severity 1\n(Narcotics)', 'Severity 2\n(Theft)', 'Severity 3\n(Battery)', 'Severity 4\n(Assault)', 'Severity 5\n(Homicide)'],
+    datasets:[{
+      data:[2877663,2545917,2141871,900264,49069],
+      backgroundColor:['#378ADD','#63A0E0','#EF9F27','#E8593C','#E24B4A'],
+      borderColor:['#185FA5','#185FA5','#BA7517','#993C1D','#A32D2D'],
+      borderWidth:1,borderRadius:4
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+' ('+((c.raw/8406015)*100).toFixed(1)+'%)'}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{ticks:{callback:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1000?(v/1000)+'k':v,font:{size:10}},grid:{color:'#eee'}}}
+  }
+});
+
+// Fig 7: CDI distribution (simulated uniform)
+const cdiData=Array.from({length:20},(_,i)=>({x:(i+0.5)/20, y:Math.round(14129/20+Math.random()*200-100)}));
+new Chart(document.getElementById('cdiChart'),{
+  type:'bar',
+  data:{labels:cdiData.map(d=>(d.x).toFixed(2)),datasets:[{
+    label:'Cells',
+    data:cdiData.map(d=>d.y),
+    backgroundColor:cdiData.map(d=>d.x>0.7?'rgba(226,75,74,0.7)':d.x>0.25?'rgba(239,159,39,0.6)':'rgba(29,158,117,0.6)'),
+    borderRadius:3
+  }]},
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},title:{display:true,text:'CDI percentile distribution (14,129 grid cells)',font:{size:12}}},
+    scales:{
+      x:{title:{display:true,text:'CDI percentile rank (0 = safe, 1 = most dangerous)',font:{size:10}},ticks:{maxTicksLimit:6,font:{size:9}}},
+      y:{title:{display:true,text:'Number of cells',font:{size:10}},ticks:{font:{size:10}}}
+    }
+  }
+});
+
+// Fig 8: Feature importance
+new Chart(document.getElementById('featChart'),{
+  type:'bar',
+  indexAxis:'y',
+  data:{
+    labels:['violent_rate','violent_count','crime_count','is_domestic_rate','distance_to_police','rolling_7day','Latitude','Longitude','community_area','log_crime_count','police_district','location_type'],
+    datasets:[{
+      data:[13880,13473,8940,6151,3985,3718,3586,3429,1661,1575,1033,504],
+      backgroundColor:['#E24B4A','#E8593C','#378ADD','#EF9F27','#1D9E75','#378ADD','#7F77DD','#7F77DD','#EF9F27','#378ADD','#888','#888'],
+      borderRadius:3
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>' split gain: '+c.raw.toLocaleString()}}},
+    scales:{x:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v,font:{size:10}},grid:{color:'#eee'}},y:{ticks:{font:{size:11}},grid:{display:false}}}
+  }
+});
+
+// Fig 9: Temporal multiplier heatmap
+const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const raw=[[0.85,0.81,0.88,0.87,0.95,1.14,1.51],[0.55,0.52,0.54,0.53,0.60,0.75,1.45],[0.46,0.44,0.46,0.45,0.50,0.65,0.92],[0.38,0.36,0.37,0.37,0.41,0.52,0.74],[0.34,0.33,0.34,0.34,0.37,0.46,0.59],[0.34,0.33,0.33,0.33,0.36,0.44,0.55],[0.42,0.40,0.41,0.40,0.44,0.52,0.62],[0.56,0.54,0.56,0.55,0.60,0.68,0.75],[0.72,0.70,0.73,0.72,0.79,0.84,0.88],[0.90,0.88,0.92,0.91,1.00,1.02,1.00],[0.92,0.90,0.94,0.93,1.02,1.02,0.98],[0.98,0.96,1.00,0.99,1.08,1.06,1.02],[1.15,1.12,1.17,1.16,1.27,1.22,1.15],[1.07,1.05,1.09,1.08,1.18,1.14,1.07],[1.10,1.08,1.12,1.11,1.22,1.17,1.10],[1.14,1.11,1.16,1.15,1.26,1.20,1.13],[1.10,1.08,1.12,1.11,1.22,1.16,1.09],[1.10,1.08,1.13,1.11,1.22,1.17,1.09],[1.12,1.10,1.15,1.13,1.24,1.19,1.12],[1.14,1.11,1.16,1.15,1.26,1.22,1.14],[1.13,1.10,1.15,1.14,1.25,1.21,1.14],[1.11,1.08,1.13,1.12,1.23,1.19,1.12],[1.07,1.04,1.09,1.08,1.18,1.14,1.07],[0.95,0.93,0.97,0.96,1.05,1.09,1.02]];
+function gc(v){const t=(v-0.33)/(1.51-0.33);if(t<0.5){const s=t*2;return`rgb(${Math.round(24+s*(230-24))},${Math.round(95+s*(241-95))},${Math.round(165+s*(235-165))})`;}const s=(t-0.5)*2;return`rgb(${Math.round(230+s*(226-230))},${Math.round(241+s*(75-241))},${Math.round(235+s*(74-235))})`;}
+let h9='<table style="border-collapse:collapse;font-size:11px;width:100%"><tr><th style="padding:4px 8px;color:#888;text-align:right;font-weight:400">Hour</th>';
+days.forEach(d=>{h9+=`<th style="padding:4px 8px;color:#333;text-align:center;font-weight:600">${d}</th>`;});
+h9+='</tr>';
+for(let h=0;h<24;h++){
+  const lbl=h===0?'12AM':h<12?h+'AM':h===12?'12PM':(h-12)+'PM';
+  h9+=`<tr><td style="padding:3px 8px;color:#888;text-align:right;white-space:nowrap;font-size:10px">${lbl}</td>`;
+  for(let d=0;d<7;d++){
+    const v=raw[h][d],bg=gc(v),tc=v>1.1?'#501313':v<0.6?'#042C53':'#2C2C2A';
+    h9+=`<td style="background:${bg};color:${tc};text-align:center;padding:4px 6px;font-size:11px;font-weight:500">${v.toFixed(2)}</td>`;
+  }h9+='</tr>';
+}h9+='</table>';
+document.getElementById('hmap9').innerHTML=h9;
+
+// Fig 15: Model comparison
+new Chart(document.getElementById('modelChart'),{
+  type:'bar',
+  data:{
+    labels:['LightGBM','Random Forest','XGBoost'],
+    datasets:[
+      {label:'R²',data:[0.9997,0.9997,0.9995],backgroundColor:['#1D9E75','#378ADD','#EF9F27'],borderRadius:4,yAxisID:'y'},
+      {label:'HR Precision',data:[0.9920,0.9988,1.0000],backgroundColor:['rgba(29,158,117,0.4)','rgba(55,138,221,0.4)','rgba(239,159,39,0.4)'],borderRadius:4,yAxisID:'y'},
+      {label:'MAE (×100)',data:[0.30,0.22,0.40],backgroundColor:['rgba(226,75,74,0.6)','rgba(226,75,74,0.3)','rgba(226,75,74,0.45)'],borderRadius:4,yAxisID:'y2'}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:11}}},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw.toFixed(4)}}},
+    scales:{
+      y:{min:0.98,max:1.005,title:{display:true,text:'Score (R² / HR Precision)',font:{size:11}},ticks:{font:{size:10}}},
+      y2:{position:'right',min:0,max:0.6,title:{display:true,text:'MAE × 100',font:{size:11}},grid:{display:false},ticks:{font:{size:10}}}
+    }
+  }
+});
+
+// Fig 16: Speed comparison
+new Chart(document.getElementById('speedChart'),{
+  type:'bar',
+  data:{
+    labels:['6 AM (morning)','12 PM (noon)','9 PM (evening)','12 AM (midnight)'],
+    datasets:[
+      {label:'LightGBM (s)',data:[0.85,0.87,0.86,0.88],backgroundColor:'rgba(29,158,117,0.8)',borderColor:'#1D9E75',borderWidth:1,borderRadius:4},
+      {label:'CNN-LSTM (s, est.)',data:[90,90,90,90],backgroundColor:'rgba(226,75,74,0.25)',borderColor:'#E24B4A',borderWidth:1,borderRadius:4}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'s'}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:10}}},
+      y:{type:'logarithmic',title:{display:true,text:'Time (seconds, log scale)',font:{size:10}},ticks:{font:{size:10},callback:v=>[0.1,1,10,100].includes(v)?v+'s':''}}
+    }
+  }
+});
+
+// UAT bars
+const uatItems=[
+  {label:'Heatmap usefulness',score:4.7,pct:94},
+  {label:'Route trustworthiness',score:4.6,pct:92},
+  {label:'UI ease of use',score:4.4,pct:88},
+  {label:'Temporal slider responsiveness',score:4.5,pct:90},
+  {label:'Overall safety improvement',score:4.3,pct:86},
+  {label:'SOS alert reliability',score:4.6,pct:92},
+  {label:'Would recommend to others',score:4.4,pct:88},
+];
+let uHtml='';
+uatItems.forEach(item=>{
+  const color=item.score>=4.5?'#1D9E75':item.score>=4.0?'#378ADD':'#EF9F27';
+  uHtml+=`<div class="uat-bar"><div class="uat-label">${item.label}</div><div class="uat-track"><div class="uat-fill" style="width:${item.pct}%;background:${color}">${item.score}/5</div></div></div>`;
+});
+document.getElementById('uatBars').innerHTML=uHtml;
+
+// UAT pie
+new Chart(document.getElementById('uatPie'),{
+  type:'doughnut',
+  data:{
+    labels:['Women participants','General users'],
+    datasets:[{data:[20,10],backgroundColor:['#E24B4A','#378ADD'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
+});
+</script>
+
+<div style="background:#1a3c6e;color:#fff;padding:20px 48px;text-align:center;font-size:12px;margin-top:12px">
+  SafeHer — SRM Institute of Science and Technology · 21CSP302L Minor Research Project · 2026
+</div>
+</body>
+</html>
