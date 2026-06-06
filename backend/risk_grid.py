@@ -90,6 +90,11 @@ print(f"            Temporal slots  : {len(_temporal_lookup)}")
 print(f"            Multiplier range: "
       f"{min(_temporal_lookup.values()):.3f} → {max(_temporal_lookup.values()):.3f}")
 
+# Precomputed spatial grid (lat/lon arrays + spatial_risk) — filled lazily on
+# first generate_risk_grid() call. Spatial risk depends only on cell location,
+# not (hour, day), so we compute it once and reuse for every request.
+_grid_cache: dict = {"lats": None, "lons": None, "spatial_risk": None}
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Internal helpers
@@ -197,31 +202,34 @@ def generate_risk_grid(
     if day   is None: day   = now.weekday()
     if month is None: month = now.month
 
-    # ── Build grid ────────────────────────────────────────────────────────────
-    lats = np.arange(lat_min, lat_max, GRID_RES)
-    lons = np.arange(lon_min, lon_max, GRID_RES)
-    grid_lats, grid_lons = np.meshgrid(lats, lons)
-    flat_lats = grid_lats.ravel().astype(np.float32)
-    flat_lons = grid_lons.ravel().astype(np.float32)
+    # ── Precompute spatial grid + spatial_risk once, then reuse ───────────────
+    # bbox params are ignored after first call (full Chicago grid is fixed)
+    if _grid_cache["spatial_risk"] is None:
+        lats = np.arange(lat_min, lat_max, GRID_RES)
+        lons = np.arange(lon_min, lon_max, GRID_RES)
+        grid_lats, grid_lons = np.meshgrid(lats, lons)
+        flat_lats = grid_lats.ravel().astype(np.float32)
+        flat_lons = grid_lons.ravel().astype(np.float32)
 
-    # ── Cell lookup ───────────────────────────────────────────────────────────
-    g_lat = (flat_lats * GRID_MULT).round().astype(np.int32)
-    g_lon = (flat_lons * GRID_MULT).round().astype(np.int32)
-    crime_counts = _lookup_cell_stats(g_lat, g_lon)
+        g_lat = (flat_lats * GRID_MULT).round().astype(np.int32)
+        g_lon = (flat_lons * GRID_MULT).round().astype(np.int32)
+        crime_counts = _lookup_cell_stats(g_lat, g_lon)
 
-    # ── Spatial risk (ML) ─────────────────────────────────────────────────────
-    X = _build_spatial_features(flat_lats, flat_lons, crime_counts)
-    spatial_risk = np.clip(_model.predict(X), 0.0, 1.0)
+        X = _build_spatial_features(flat_lats, flat_lons, crime_counts)
+        spatial_risk = np.clip(_model.predict(X), 0.0, 1.0).astype(np.float32)
 
-    # ── Temporal multiplier (lookup) ──────────────────────────────────────────
-    mult = _temporal_mult(hour, day)
+        _grid_cache["lats"] = flat_lats
+        _grid_cache["lons"] = flat_lons
+        _grid_cache["spatial_risk"] = spatial_risk
+        print(f"[risk_grid] Spatial grid cached: {len(flat_lats):,} cells")
 
-    # ── Combined risk ─────────────────────────────────────────────────────────
-    final_risk = np.clip(spatial_risk * mult, 0.0, 1.0).astype(np.float32)
+    # ── Apply temporal multiplier (cheap) ─────────────────────────────────────
+    mult       = _temporal_mult(hour, day)
+    final_risk = np.clip(_grid_cache["spatial_risk"] * mult, 0.0, 1.0)
 
     return pd.DataFrame({
-        "lat":  flat_lats,
-        "lon":  flat_lons,
+        "lat":  _grid_cache["lats"],
+        "lon":  _grid_cache["lons"],
         "risk": np.round(final_risk, 4),
     })
 

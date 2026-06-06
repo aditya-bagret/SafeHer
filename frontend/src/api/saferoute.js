@@ -36,7 +36,7 @@ export async function fetchSafeRoute(origin, destination, hour, day) {
   const response = await fetch(url, {
     method:  "GET",
     headers: { "Content-Type": "application/json" },
-    signal:  AbortSignal.timeout(20_000), // 20s — Google Directions can be slow
+    signal:  AbortSignal.timeout(75_000), // 75s — Render cold start + Google Directions
   });
 
   if (!response.ok) {

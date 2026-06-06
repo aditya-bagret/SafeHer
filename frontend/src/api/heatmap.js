@@ -19,7 +19,7 @@ export async function fetchHeatmap(hour, day) {
   const response = await fetch(url, {
     method:  "GET",
     headers: { "Content-Type": "application/json" },
-    signal:  AbortSignal.timeout(15_000), // 15s timeout
+    signal:  AbortSignal.timeout(75_000), // 75s — Render free tier cold start can take ~50s
   });
 
   if (!response.ok) {
